@@ -1,8 +1,9 @@
 export type Person = {
   id: string;
   name: string;
+  /** Full photo — admin only on public surfaces; players get it after a correct guess */
   photoUrl: string;
-  /** When true, show silhouette instead of photo until guessed */
+  /** Admin preference flag; public UI always silhouettes until a correct guess */
   silhouette: boolean;
   clues: string[];
   /** Accepted answers (case-insensitive, trimmed) */
@@ -37,9 +38,10 @@ export type EventConfig = {
   updatedAt: string;
 };
 
-export type PublicPerson = Omit<Person, "aliases" | "name"> & {
-  /** Revealed only after correct guess in that session response */
-  name?: string;
+/** Public Guess Who card — no name, aliases, or photo until a correct guess */
+export type PublicPerson = {
+  id: string;
+  clues: string[];
 };
 
 export type PublicEvent = {

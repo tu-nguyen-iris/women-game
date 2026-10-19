@@ -13,17 +13,23 @@ type GuessResult = {
   photoUrl?: string;
 };
 
+type RevealedPerson = {
+  name: string;
+  photoUrl: string;
+};
+
 export function GuessWho({ initial }: { initial: PublicEvent }) {
   const people = initial.people;
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [result, setResult] = useState<GuessResult | null>(null);
-  const [revealed, setRevealed] = useState<Record<string, string>>({});
+  const [revealed, setRevealed] = useState<Record<string, RevealedPerson>>({});
   const [error, setError] = useState<string | null>(null);
 
   const person: PublicPerson | undefined = people[index];
-  const isRevealed = person ? Boolean(revealed[person.id]) : false;
+  const revealedPerson = person ? revealed[person.id] : undefined;
+  const isRevealed = Boolean(revealedPerson);
 
   const progress = useMemo(
     () => `${Math.min(index + 1, people.length)} / ${people.length}`,
@@ -60,8 +66,14 @@ export function GuessWho({ initial }: { initial: PublicEvent }) {
         name: data.name,
         photoUrl: data.photoUrl,
       });
-      if (data.correct && data.name) {
-        setRevealed((prev) => ({ ...prev, [person.id]: data.name as string }));
+      if (data.correct && data.name && data.photoUrl) {
+        setRevealed((prev) => ({
+          ...prev,
+          [person.id]: {
+            name: data.name as string,
+            photoUrl: data.photoUrl as string,
+          },
+        }));
       }
       setStatus("done");
     } catch {
@@ -85,16 +97,17 @@ export function GuessWho({ initial }: { initial: PublicEvent }) {
 
   if (!person) return null;
 
-  const showPhoto = !person.silhouette || isRevealed;
-  const displayName = revealed[person.id];
+  // Real photo only after a correct guess — never from the public event payload
+  const photoUrl = revealedPerson?.photoUrl || (result?.correct ? result.photoUrl : undefined);
+  const displayName = revealedPerson?.name;
 
   return (
     <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
       <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-200/80 via-rose-100/60 to-white/40 p-3 shadow-[0_20px_60px_-28px_rgba(190,18,60,0.45)] animate-rise">
         <div className="relative aspect-[5/6] overflow-hidden rounded-[1.6rem] bg-rose-950/10">
-          {showPhoto ? (
+          {photoUrl ? (
             <Image
-              src={result?.photoUrl || person.photoUrl}
+              src={photoUrl}
               alt={displayName || "Ảnh người bí ẩn"}
               fill
               className="object-cover transition duration-700"

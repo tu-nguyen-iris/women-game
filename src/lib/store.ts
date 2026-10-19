@@ -97,10 +97,9 @@ export function toPublicEvent(config: EventConfig): PublicEvent {
   return {
     title: config.title,
     welcomeText: config.welcomeText,
+    // Public: clues only — never name, aliases, or photoUrl (photo returns on correct guess)
     people: config.people.map((p) => ({
       id: p.id,
-      photoUrl: p.photoUrl,
-      silhouette: p.silhouette,
       clues: p.clues,
     })),
     // Public: question + claim state only — never answer (displayNumber), label, description
