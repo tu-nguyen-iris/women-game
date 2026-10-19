@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getConfig, saveConfig } from "@/lib/store";
+import {
+  claimedByMatchesPerson,
+  getConfig,
+  saveConfig,
+} from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -8,7 +12,8 @@ export const runtime = "nodejs";
 const bodySchema = z.object({
   giftId: z.string().min(1),
   answer: z.coerce.number().int().positive(),
-  claimerName: z.string().min(1).max(80),
+  /** Must be a known Guess Who person id — free-text names are rejected. */
+  claimerId: z.string().min(1),
 });
 
 export async function POST(request: Request) {
@@ -22,12 +27,40 @@ export async function POST(request: Request) {
   const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
-      { ok: false, error: "Chọn hộp quà, nhập câu trả lời và tên của bạn." },
+      { ok: false, error: "Chọn hộp quà, nhập câu trả lời và người nhận." },
       { status: 400 },
     );
   }
 
   const config = await getConfig();
+  const person = config.people.find((p) => p.id === parsed.data.claimerId);
+
+  if (!person) {
+    return NextResponse.json(
+      { ok: false, error: "Người nhận không hợp lệ. Hãy chọn từ danh sách." },
+      { status: 400 },
+    );
+  }
+
+  const alreadyClaimed = config.gifts.find((g) =>
+    claimedByMatchesPerson(g.claimedBy, person),
+  );
+  if (alreadyClaimed) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: `${person.name} đã nhận một món quà rồi.`,
+        gift: alreadyClaimed.claimedBy
+          ? {
+              id: alreadyClaimed.id,
+              claimedBy: alreadyClaimed.claimedBy,
+            }
+          : undefined,
+      },
+      { status: 409 },
+    );
+  }
+
   const gift = config.gifts.find((g) => g.id === parsed.data.giftId);
 
   if (!gift) {
@@ -58,18 +91,18 @@ export async function POST(request: Request) {
     );
   }
 
-  const claimer = parsed.data.claimerName.trim();
-  gift.claimedBy = claimer;
+  gift.claimedBy = person.name;
   gift.claimedAt = new Date().toISOString();
   await saveConfig(config);
 
   return NextResponse.json({
     ok: true,
-    message: `Chúc mừng ${claimer}! Bạn nhận quà số ${gift.displayNumber}. Mở hộp thật để xem món quà nhé!`,
+    message: `Chúc mừng ${person.name}! Bạn nhận quà số ${gift.displayNumber}. Mở hộp thật để xem món quà nhé!`,
     gift: {
       id: gift.id,
       displayNumber: gift.displayNumber,
       claimedBy: gift.claimedBy,
+      claimerId: person.id,
     },
   });
 }

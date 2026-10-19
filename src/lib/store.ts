@@ -102,6 +102,11 @@ export function toPublicEvent(config: EventConfig): PublicEvent {
       id: p.id,
       clues: p.clues,
     })),
+    // Claim dropdown: id + display name only — never photoUrl
+    claimers: config.people.map((p) => ({
+      id: p.id,
+      name: p.name,
+    })),
     // Public: question + claim state only — never answer (displayNumber), label, description
     gifts: config.gifts
       .slice()
@@ -114,6 +119,18 @@ export function toPublicEvent(config: EventConfig): PublicEvent {
         claimedBy: g.claimedBy,
       })),
   };
+}
+
+/** True if claimedBy refers to this person (by id preferred, else exact normalized name). */
+export function claimedByMatchesPerson(
+  claimedBy: string | null | undefined,
+  person: { id: string; name: string },
+): boolean {
+  if (!claimedBy) return false;
+  const raw = claimedBy.trim();
+  if (!raw) return false;
+  if (raw === person.id) return true;
+  return normalizeAnswer(raw) === normalizeAnswer(person.name);
 }
 
 export function normalizeAnswer(value: string): string {

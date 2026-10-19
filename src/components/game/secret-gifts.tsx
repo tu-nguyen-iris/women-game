@@ -11,17 +11,38 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { PublicEvent } from "@/lib/types";
+import type { PublicClaimer, PublicEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type GiftPublic = PublicEvent["gifts"][number];
 
+function normalizeName(value: string): string {
+  return value
+    .normalize("NFC")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function personAlreadyClaimed(
+  person: PublicClaimer,
+  gifts: GiftPublic[],
+): boolean {
+  return gifts.some((g) => {
+    if (!g.claimed || !g.claimedBy) return false;
+    const by = g.claimedBy.trim();
+    if (by === person.id) return true;
+    return normalizeName(by) === normalizeName(person.name);
+  });
+}
+
 export function SecretGifts({ initial }: { initial: PublicEvent }) {
   const [gifts, setGifts] = useState(initial.gifts);
+  const [claimers] = useState(initial.claimers ?? []);
   const [selected, setSelected] = useState<GiftPublic | null>(null);
   const [claimOpen, setClaimOpen] = useState(false);
   const [answer, setAnswer] = useState("");
-  const [claimerName, setClaimerName] = useState("");
+  const [claimerId, setClaimerId] = useState("");
   const [loading, setLoading] = useState(false);
   const [unlockedNumber, setUnlockedNumber] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<{
@@ -34,9 +55,15 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
     [gifts],
   );
 
+  const availableClaimers = useMemo(
+    () => claimers.filter((c) => !personAlreadyClaimed(c, gifts)),
+    [claimers, gifts],
+  );
+
   function openGift(gift: GiftPublic) {
     setSelected(gift);
     setAnswer("");
+    setClaimerId("");
     setFeedback(null);
     setUnlockedNumber(null);
     setClaimOpen(true);
@@ -44,7 +71,7 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
 
   async function claim(e: React.FormEvent) {
     e.preventDefault();
-    if (!selected) return;
+    if (!selected || !claimerId) return;
     setLoading(true);
     setFeedback(null);
     try {
@@ -54,7 +81,7 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
         body: JSON.stringify({
           giftId: selected.id,
           answer: Number(answer),
-          claimerName,
+          claimerId,
         }),
       });
       const data = await res.json();
@@ -68,6 +95,16 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
                 : g,
             ),
           );
+        }
+        // Sync claim state so the select drops people who already claimed
+        try {
+          const eventRes = await fetch("/api/event");
+          if (eventRes.ok) {
+            const event = (await eventRes.json()) as PublicEvent;
+            if (Array.isArray(event.gifts)) setGifts(event.gifts);
+          }
+        } catch {
+          // keep local state
         }
         setLoading(false);
         return;
@@ -88,7 +125,17 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
       );
       setFeedback({ type: "ok", message: data.message });
       setAnswer("");
-      setClaimerName("");
+      setClaimerId("");
+      // Refresh so this claimer disappears from the select for this client
+      try {
+        const eventRes = await fetch("/api/event");
+        if (eventRes.ok) {
+          const event = (await eventRes.json()) as PublicEvent;
+          if (Array.isArray(event.gifts)) setGifts(event.gifts);
+        }
+      } catch {
+        // local gift update already applied
+      }
     } catch {
       setFeedback({ type: "err", message: "Lỗi mạng — thử lại sau." });
     } finally {
@@ -195,16 +242,29 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Tên người nhận</Label>
-                <input
-                  id="name"
-                  name="claimerName"
-                  value={claimerName}
-                  onChange={(e) => setClaimerName(e.target.value)}
-                  placeholder="Tên của bạn"
+                <Label htmlFor="claimer">Tên người nhận</Label>
+                <select
+                  id="claimer"
+                  name="claimerId"
+                  value={claimerId}
+                  onChange={(e) => setClaimerId(e.target.value)}
                   required
                   className="h-10 w-full rounded-lg border border-input bg-white/80 px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                />
+                >
+                  <option value="" disabled>
+                    Chọn người nhận…
+                  </option>
+                  {availableClaimers.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                {availableClaimers.length === 0 && (
+                  <p className="text-xs text-[var(--ink-soft)]">
+                    Tất cả mọi người đã nhận quà.
+                  </p>
+                )}
               </div>
               {feedback && (
                 <p
@@ -225,7 +285,12 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
               <DialogFooter>
                 <Button
                   type="submit"
-                  disabled={loading || feedback?.type === "ok"}
+                  disabled={
+                    loading ||
+                    feedback?.type === "ok" ||
+                    !claimerId ||
+                    availableClaimers.length === 0
+                  }
                   className="bg-[var(--rose-deep)] text-white hover:bg-[var(--rose)]"
                 >
                   {loading ? "Đang kiểm tra…" : "Gửi câu trả lời"}

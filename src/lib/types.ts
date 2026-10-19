@@ -44,10 +44,21 @@ export type PublicPerson = {
   clues: string[];
 };
 
+/** Public claimer option — id + display name only (no photoUrl) */
+export type PublicClaimer = {
+  id: string;
+  name: string;
+};
+
 export type PublicEvent = {
   title: string;
   welcomeText: string;
   people: PublicPerson[];
+  /**
+   * Guess Who people available as gift claimers (id + name).
+   * Safe for the claim dropdown — does not include photoUrl.
+   */
+  claimers: PublicClaimer[];
   gifts: Array<{
     id: string;
     slot: number;
