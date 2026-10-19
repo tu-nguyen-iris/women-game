@@ -166,13 +166,14 @@ export function AdminBoard() {
         <form onSubmit={login} className="mt-6 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="pw">Mật khẩu</Label>
-            <Input
+            <input
               id="pw"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               required
+              className="h-10 w-full rounded-lg border border-input bg-white/80 px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             />
           </div>
           {error && <p className="text-sm text-red-700">{error}</p>}
@@ -231,7 +232,7 @@ export function AdminBoard() {
             <Label>Tiêu đề sự kiện</Label>
             <Input
               value={config.title}
-              onChange={(e) => setConfig({ ...config, title: e.target.value })}
+              onValueChange={(value) => setConfig({ ...config, title: value })}
             />
           </div>
           <div className="space-y-2">
@@ -268,14 +269,14 @@ export function AdminBoard() {
                   <Label>Tên</Label>
                   <Input
                     value={person.name}
-                    onChange={(e) => updatePerson(person.id, { name: e.target.value })}
+                    onValueChange={(value) => updatePerson(person.id, { name: value })}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>URL ảnh</Label>
                   <Input
                     value={person.photoUrl}
-                    onChange={(e) => updatePerson(person.id, { photoUrl: e.target.value })}
+                    onValueChange={(value) => updatePerson(person.id, { photoUrl: value })}
                   />
                 </div>
               </div>
@@ -352,10 +353,10 @@ export function AdminBoard() {
                     <Label>Số hiển thị</Label>
                     <Input
                       type="number"
-                      value={gift.displayNumber}
-                      onChange={(e) =>
+                      value={String(gift.displayNumber)}
+                      onValueChange={(value) =>
                         updateGift(gift.id, {
-                          displayNumber: Number(e.target.value) || 0,
+                          displayNumber: Number(value) || 0,
                         })
                       }
                     />
@@ -364,7 +365,7 @@ export function AdminBoard() {
                     <Label>Tên quà</Label>
                     <Input
                       value={gift.label}
-                      onChange={(e) => updateGift(gift.id, { label: e.target.value })}
+                      onValueChange={(value) => updateGift(gift.id, { label: value })}
                     />
                   </div>
                 </div>
@@ -372,8 +373,8 @@ export function AdminBoard() {
                   <Label>Mô tả</Label>
                   <Input
                     value={gift.description}
-                    onChange={(e) =>
-                      updateGift(gift.id, { description: e.target.value })
+                    onValueChange={(value) =>
+                      updateGift(gift.id, { description: value })
                     }
                   />
                 </div>

@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -208,23 +207,27 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
           <form onSubmit={claim} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="num">Số trên thẻ / trên hộp</Label>
-              <Input
+              <input
                 id="num"
+                name="displayNumber"
                 inputMode="numeric"
                 value={displayNumber}
                 onChange={(e) => setDisplayNumber(e.target.value)}
                 placeholder="VD: 7"
                 required
+                className="h-10 w-full rounded-lg border border-input bg-white/80 px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="name">Tên người nhận</Label>
-              <Input
+              <input
                 id="name"
+                name="claimerName"
                 value={claimerName}
                 onChange={(e) => setClaimerName(e.target.value)}
                 placeholder="Tên của bạn"
                 required
+                className="h-10 w-full rounded-lg border border-input bg-white/80 px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               />
             </div>
             {feedback && (

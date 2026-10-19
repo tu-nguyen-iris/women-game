@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { PublicEvent, PublicPerson } from "@/lib/types";
 
@@ -149,11 +148,12 @@ export function GuessWho({ initial }: { initial: PublicEvent }) {
 
         {!isRevealed ? (
           <form onSubmit={submit} className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Input
+            <input
+              name="answer"
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               placeholder="Gõ tên hoặc biệt danh…"
-              className="h-12 flex-1 border-rose-200/80 bg-white/70 text-base"
+              className="h-12 flex-1 rounded-lg border border-rose-200/80 bg-white/70 px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               disabled={status === "loading"}
               autoComplete="off"
             />
