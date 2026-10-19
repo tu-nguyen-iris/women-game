@@ -29,8 +29,8 @@ Cấu hình lưu vào `data/event-store.json` (local). Trên Vercel serverless, 
 
 Demo anonymous deploy (hết hạn ~60 phút nếu chưa claim — claim sớm):
 
-- App: https://temporary-quick-sulfur-1ba7o49.vercel.app
-- Claim để giữ lâu dài: https://vercel.com/claim-deployment?code=8d97eb37-7370-45c1-b7a4-cdf48a897c22
+- App: https://temporary-sonic-coral-p0grlrz.vercel.app
+- Claim để giữ lâu dài: https://vercel.com/claim-deployment?code=f92e7ce9-12d3-4860-a7f9-26f2cefca195
 
 Deploy bền vững bằng tài khoản Vercel của team:
 
