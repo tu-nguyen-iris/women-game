@@ -1,7 +1,13 @@
 import type { EventConfig, Gift, Person } from "./types";
 
-/** Scrambled display numbers — not 1–15 in order. Demo answers match physical cards later. */
-const SCRAMBLED_NUMBERS = [7, 14, 3, 11, 1, 9, 15, 5, 12, 2, 8, 13, 6, 10, 4];
+/**
+ * Gift slot 1→15 display numbers = physical thiệp answers (not 1–15 sequential).
+ * Questions stay on cards only — see docs/thiep-questions-answers.md in agent store.
+ * Thiệp 1→15: 7, 12, 18, 21, 24, 27, 33, 38, 42, 47, 52, 58, 63, 72, 88
+ */
+const SCRAMBLED_NUMBERS = [
+  7, 12, 18, 21, 24, 27, 33, 38, 42, 47, 52, 58, 63, 72, 88,
+];
 
 const GIFT_LABELS = [
   { label: "Hộp soft", description: "Một món nhỏ xinh để bàn làm việc." },
