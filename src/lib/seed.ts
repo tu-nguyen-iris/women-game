@@ -159,8 +159,8 @@ const PEOPLE: Person[] = [
   {
     id: "p2",
     name: "Nguyễn Phương Quyên",
-    photoUrl: "/placeholders/person-2.svg",
-    silhouette: true,
+    photoUrl: "/people/quyen.jpg",
+    silhouette: false,
     clues: [
       "Thích nuôi mèo",
       "Đang có một em bé rất trộm vía trong bụng",
@@ -177,8 +177,8 @@ const PEOPLE: Person[] = [
   {
     id: "p3",
     name: "Thạch Thị Thu Trang",
-    photoUrl: "/placeholders/person-3.svg",
-    silhouette: true,
+    photoUrl: "/people/trang.jpg",
+    silhouette: false,
     clues: [
       "Biệt danh Rapuka",
       "Nhẹ nhàng",
@@ -195,8 +195,8 @@ const PEOPLE: Person[] = [
   {
     id: "p4",
     name: "Trình Thị Thùy Trinh",
-    photoUrl: "/placeholders/person-1.svg",
-    silhouette: true,
+    photoUrl: "/people/thuy-trinh.jpg",
+    silhouette: false,
     clues: ["Thích nuôi hamster"],
     aliases: [
       "trình thị thùy trinh",
@@ -209,8 +209,8 @@ const PEOPLE: Person[] = [
   {
     id: "p5",
     name: "Nguyễn Dương Anh Phương",
-    photoUrl: "/placeholders/person-2.svg",
-    silhouette: true,
+    photoUrl: "/people/anh-phuong.jpg",
+    silhouette: false,
     clues: [
       'Mỗi ngày sẽ có ít nhất 1 ly "hóa chất"',
       "Sinh viên RMIT",
@@ -229,8 +229,8 @@ const PEOPLE: Person[] = [
   {
     id: "p6",
     name: "Lý Thanh Thảo",
-    photoUrl: "/placeholders/person-3.svg",
-    silhouette: true,
+    photoUrl: "/people/ly-thanh-thao.jpg",
+    silhouette: false,
     clues: [
       "Cô gái người Hoa",
       "Thích ăn gà rán",
@@ -265,8 +265,8 @@ const PEOPLE: Person[] = [
   {
     id: "p8",
     name: "Thái Yến Phụng",
-    photoUrl: "/placeholders/person-2.svg",
-    silhouette: true,
+    photoUrl: "/people/yen-phung.jpg",
+    silhouette: false,
     clues: [
       "Cô gái quê Ninh Thuận của team AIME",
       "Có nụ cười đẹp",
@@ -283,8 +283,8 @@ const PEOPLE: Person[] = [
   {
     id: "p9",
     name: "Trần Thị Minh Thư",
-    photoUrl: "/placeholders/person-3.svg",
-    silhouette: true,
+    photoUrl: "/people/minh-thu.jpg",
+    silhouette: false,
     clues: [
       "Hay nói tiếng Anh lung tung",
       "Tóc dài",
@@ -333,8 +333,8 @@ const PEOPLE: Person[] = [
   {
     id: "p12",
     name: "Trần Thị Thanh Hân",
-    photoUrl: "/placeholders/person-3.svg",
-    silhouette: true,
+    photoUrl: "/people/thanh-han.jpg",
+    silhouette: false,
     clues: ["Cô gái sinh năm 2003", "Vừa vào công ty"],
     aliases: [
       "trần thị thanh hân",
@@ -348,8 +348,8 @@ const PEOPLE: Person[] = [
   {
     id: "p13",
     name: "Lê Phương Thảo",
-    photoUrl: "/placeholders/person-1.svg",
-    silhouette: true,
+    photoUrl: "/people/phuong-thao.jpg",
+    silhouette: false,
     clues: [
       "Cô gái sinh năm 2003",
       "Ghiền cà phê kem dẻo Buôn Mê",
