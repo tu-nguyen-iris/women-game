@@ -23,7 +23,7 @@ const personSchema = z.object({
 
 const giftSchema = z.object({
   id: z.string().min(1),
-  slot: z.number().int().min(1).max(15),
+  slot: z.number().int().min(1).max(40),
   displayNumber: z.number().int().positive(),
   label: z.string().min(1),
   description: z.string(),
@@ -35,7 +35,7 @@ const configSchema = z.object({
   title: z.string().min(1),
   welcomeText: z.string(),
   people: z.array(personSchema),
-  gifts: z.array(giftSchema).length(15),
+  gifts: z.array(giftSchema).min(1).max(40),
 });
 
 export async function GET(request: Request) {
@@ -61,7 +61,7 @@ export async function PUT(request: Request) {
   const parsed = configSchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
-      { ok: false, error: "Cấu hình chưa hợp lệ (cần đủ 15 quà).", details: parsed.error.flatten() },
+      { ok: false, error: "Cấu hình chưa hợp lệ (kiểm tra người / quà).", details: parsed.error.flatten() },
       { status: 400 },
     );
   }

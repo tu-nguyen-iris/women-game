@@ -108,8 +108,8 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
           Quà bí mật
         </h1>
         <p className="mt-3 text-[var(--ink-soft)]">
-          Mỗi hộp chỉ hiện số — khớp với đáp án trên thẻ của anh Hiếu. Nhập đúng số để nhận;
-          tên món quà giữ bí mật đến khi mở hộp thật. Đã nhận: {claimedCount}/{gifts.length}.
+          Mỗi hộp chỉ hiện số — khớp với số trên thẻ của anh Hiếu. Nhập đúng số để nhận;
+          món quà thật mở hộp mới biết. Đã nhận: {claimedCount}/{gifts.length}.
         </p>
         <Button
           className="mt-5 bg-[var(--rose-deep)] text-white hover:bg-[var(--rose)]"
@@ -165,8 +165,8 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
             </DialogTitle>
             <DialogDescription className="text-[var(--ink-soft)]">
               {selected?.claimed
-                ? `Đã được ${selected.claimedBy || "ai đó"} nhận.`
-                : "Còn trống — nhập đúng số trên thẻ để nhận. Tên món quà chỉ biết khi mở hộp thật."}
+                ? `Đã nhận${selected.claimedBy ? ` — ${selected.claimedBy}` : ""}.`
+                : "Còn trống — nhập đúng số trên thẻ để nhận. Nội dung hộp mở thật mới biết."}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -193,7 +193,7 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
               Mở quà bằng số thẻ
             </DialogTitle>
             <DialogDescription>
-              Nhập đáp án trên thẻ vật lý — số đó phải khớp số in trên hộp quà.
+              Nhập số trên thẻ vật lý — phải khớp số in trên hộp quà.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={claim} className="space-y-4">

@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   if (!gift) {
     return NextResponse.json({
       ok: false,
-      error: "Không có món quà nào khớp số này. Kiểm tra lại đáp án trên thẻ nhé.",
+      error: "Không có món quà nào khớp số này. Kiểm tra lại số trên thẻ nhé.",
     }, { status: 404 });
   }
 

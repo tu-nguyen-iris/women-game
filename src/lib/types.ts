@@ -11,11 +11,13 @@ export type Person = {
 
 export type Gift = {
   id: string;
-  /** Internal slot order 1–15 */
+  /** Internal board order (admin-editable) */
   slot: number;
-  /** Scrambled display number shown on the gift (matches physical card answer) */
+  /** Scrambled display number shown on the gift (matches physical card number) */
   displayNumber: number;
+  /** Internal prize name — never exposed on public /api/event */
   label: string;
+  /** Internal note — never exposed on public /api/event */
   description: string;
   claimedBy: string | null;
   claimedAt: string | null;

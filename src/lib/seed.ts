@@ -282,7 +282,7 @@ export function createSeedConfig(): EventConfig {
   return {
     title: "Ngày Phụ nữ Việt Nam 20/10",
     welcomeText:
-      "Chào mừng cả nhà đến buổi giao lưu ấm áp của team! Đoán đồng nghiệp qua vài manh mối, rồi mở quà bí mật bằng đáp án trên thẻ của anh Hiếu nhé.",
+      "Chào mừng cả nhà đến buổi giao lưu ấm áp của team! Đoán đồng nghiệp qua vài manh mối, rồi mở quà bí mật bằng số trên thẻ của anh Hiếu nhé.",
     people: PEOPLE,
     gifts: buildGifts(),
     updatedAt: new Date().toISOString(),

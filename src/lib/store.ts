@@ -90,6 +90,7 @@ export function toPublicEvent(config: EventConfig): PublicEvent {
       silhouette: p.silhouette,
       clues: p.clues,
     })),
+    // Public gifts: display numbers + claim state only — never label/description/answers
     gifts: config.gifts
       .slice()
       .sort((a, b) => a.slot - b.slot)

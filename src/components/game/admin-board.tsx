@@ -21,6 +21,33 @@ function newPerson(): Person {
   };
 }
 
+function nextGiftSlot(gifts: Gift[]): number {
+  const used = new Set(gifts.map((g) => g.slot));
+  let slot = 1;
+  while (used.has(slot)) slot += 1;
+  return slot;
+}
+
+function nextDisplayNumber(gifts: Gift[]): number {
+  const used = new Set(gifts.map((g) => g.displayNumber));
+  let n = 1;
+  while (used.has(n)) n += 1;
+  return n;
+}
+
+function newGift(gifts: Gift[]): Gift {
+  const slot = nextGiftSlot(gifts);
+  return {
+    id: `gift-${Date.now()}-${slot}`,
+    slot,
+    displayNumber: nextDisplayNumber(gifts),
+    label: `Quà ô ${slot}`,
+    description: "",
+    claimedBy: null,
+    claimedAt: null,
+  };
+}
+
 export function AdminBoard() {
   const [password, setPassword] = useState("");
   const [token, setToken] = useState<string | null>(null);
@@ -224,7 +251,7 @@ export function AdminBoard() {
         <TabsList className="bg-white/60">
           <TabsTrigger value="event">Sự kiện</TabsTrigger>
           <TabsTrigger value="people">Đoán người</TabsTrigger>
-          <TabsTrigger value="gifts">15 quà</TabsTrigger>
+          <TabsTrigger value="gifts">Quà ({config.gifts.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="event" className="mt-4 space-y-4 rounded-2xl bg-white/55 p-5">
@@ -331,10 +358,19 @@ export function AdminBoard() {
         </TabsContent>
 
         <TabsContent value="gifts" className="mt-4 space-y-3">
-          <p className="text-sm text-[var(--ink-soft)]">
-            Số hiển thị phải khớp đáp án thẻ vật lý — không trùng nhau. Thứ tự ô 1–15 chỉ để
-            sắp xếp trên bàn.
-          </p>
+          <div className="rounded-2xl bg-white/55 p-4 text-sm text-[var(--ink-soft)]">
+            <p>
+              Cấu hình đầy đủ quà bí mật. <strong className="font-medium text-[var(--ink)]">Số hiển thị</strong>{" "}
+              in trên hộp (khớp số trên thẻ vật lý) — không trùng.{" "}
+              <strong className="font-medium text-[var(--ink)]">Tên / mô tả</strong> chỉ nội bộ
+              (admin); player không thấy.
+            </p>
+            <p className="mt-2 text-xs text-[var(--ink-muted)]">
+              Hiện {config.gifts.length} món · đã nhận{" "}
+              {config.gifts.filter((g) => g.claimedBy).length}. Seed mặc định: 15 ô với số thiệp
+              7…88.
+            </p>
+          </div>
           {config.gifts
             .slice()
             .sort((a, b) => a.slot - b.slot)
@@ -342,13 +378,54 @@ export function AdminBoard() {
               <div key={gift.id} className="rounded-2xl bg-white/55 p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <p className="font-medium">Ô {gift.slot}</p>
-                  <p className="text-xs text-[var(--ink-muted)]">
-                    {gift.claimedBy
-                      ? `Đã nhận: ${gift.claimedBy}`
-                      : "Còn trống"}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-xs text-[var(--ink-muted)]">
+                      {gift.claimedBy
+                        ? `Đã nhận: ${gift.claimedBy}${
+                            gift.claimedAt
+                              ? ` · ${new Date(gift.claimedAt).toLocaleString("vi-VN")}`
+                              : ""
+                          }`
+                        : "Còn trống"}
+                    </p>
+                    {gift.claimedBy && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          updateGift(gift.id, { claimedBy: null, claimedAt: null })
+                        }
+                      >
+                        Reset claim
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setConfig({
+                          ...config,
+                          gifts: config.gifts.filter((g) => g.id !== gift.id),
+                        })
+                      }
+                    >
+                      Xóa
+                    </Button>
+                  </div>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-4">
+                  <div className="space-y-2">
+                    <Label>Ô (slot)</Label>
+                    <Input
+                      type="number"
+                      value={String(gift.slot)}
+                      onValueChange={(value) =>
+                        updateGift(gift.id, { slot: Number(value) || 1 })
+                      }
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label>Số hiển thị</Label>
                     <Input
@@ -362,7 +439,7 @@ export function AdminBoard() {
                     />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
-                    <Label>Tên quà</Label>
+                    <Label>Tên quà (nội bộ)</Label>
                     <Input
                       value={gift.label}
                       onValueChange={(value) => updateGift(gift.id, { label: value })}
@@ -370,7 +447,7 @@ export function AdminBoard() {
                   </div>
                 </div>
                 <div className="mt-3 space-y-2">
-                  <Label>Mô tả</Label>
+                  <Label>Mô tả / ghi chú nội bộ</Label>
                   <Input
                     value={gift.description}
                     onValueChange={(value) =>
@@ -380,9 +457,29 @@ export function AdminBoard() {
                 </div>
               </div>
             ))}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                setConfig({ ...config, gifts: [...config.gifts, newGift(config.gifts)] })
+              }
+            >
+              Thêm quà
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={busy || !config.gifts.some((g) => g.claimedBy)}
+              onClick={() => adminAction("reset-claims")}
+            >
+              Reset mọi claim
+            </Button>
+          </div>
           <Separator className="my-4" />
           <p className="text-xs text-[var(--ink-muted)]">
-            Mẹo: đặt số hiển thị = đáp án thẻ anh Hiếu. Bấm «Reset nhận quà» trước giờ party.
+            Mẹo: số hiển thị = số trên thẻ anh Hiếu. Lưu cấu hình sau khi sửa. «Seed lại mẫu»
+            khôi phục 15 quà + 14 người.
           </p>
         </TabsContent>
       </Tabs>
