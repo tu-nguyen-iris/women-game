@@ -39,10 +39,9 @@ export async function POST(request: Request) {
   if (gift.claimedBy) {
     return NextResponse.json({
       ok: false,
-      error: `Món này đã được ${gift.claimedBy} nhận rồi.`,
+      error: `Số ${gift.displayNumber} đã được ${gift.claimedBy} nhận rồi.`,
       gift: {
         id: gift.id,
-        label: gift.label,
         displayNumber: gift.displayNumber,
         claimedBy: gift.claimedBy,
       },
@@ -56,11 +55,9 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
-    message: `Chúc mừng ${claimer}! Bạn đã mở được «${gift.label}».`,
+    message: `Chúc mừng ${claimer}! Bạn đã nhận quà số ${gift.displayNumber}. Mở hộp thật để xem món quà nhé!`,
     gift: {
       id: gift.id,
-      label: gift.label,
-      description: gift.description,
       displayNumber: gift.displayNumber,
       claimedBy: gift.claimedBy,
     },

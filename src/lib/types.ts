@@ -42,8 +42,6 @@ export type PublicEvent = {
     id: string;
     slot: number;
     displayNumber: number;
-    label: string;
-    description: string;
     claimed: boolean;
     claimedBy: string | null;
   }>;

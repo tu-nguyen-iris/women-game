@@ -97,8 +97,6 @@ export function toPublicEvent(config: EventConfig): PublicEvent {
         id: g.id,
         slot: g.slot,
         displayNumber: g.displayNumber,
-        label: g.label,
-        description: g.description,
         claimed: Boolean(g.claimedBy),
         claimedBy: g.claimedBy,
       })),

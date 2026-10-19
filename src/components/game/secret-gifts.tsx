@@ -75,8 +75,6 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
                 ...g,
                 claimed: true,
                 claimedBy: data.gift.claimedBy,
-                label: data.gift.label,
-                description: data.gift.description,
               }
             : g,
         ),
@@ -110,8 +108,8 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
           Quà bí mật
         </h1>
         <p className="mt-3 text-[var(--ink-soft)]">
-          Mỗi hộp có một số — khớp với đáp án trên thẻ của anh Hiếu. Nhập đúng số để nhận quà.
-          Đã nhận: {claimedCount}/{gifts.length}.
+          Mỗi hộp chỉ hiện số — khớp với đáp án trên thẻ của anh Hiếu. Nhập đúng số để nhận;
+          tên món quà giữ bí mật đến khi mở hộp thật. Đã nhận: {claimedCount}/{gifts.length}.
         </p>
         <Button
           className="mt-5 bg-[var(--rose-deep)] text-white hover:bg-[var(--rose)]"
@@ -145,8 +143,8 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
               </span>
               <div>
                 <p className="text-xs text-[var(--ink-muted)]">Ô {gift.slot}</p>
-                <p className="mt-1 line-clamp-2 text-sm font-medium text-[var(--ink)]">
-                  {gift.claimed ? "Đã nhận" : gift.label}
+                <p className="mt-1 text-sm font-medium text-[var(--ink)]">
+                  {gift.claimed ? "Đã nhận" : "Quà bí mật"}
                 </p>
                 {gift.claimed && gift.claimedBy && (
                   <p className="mt-1 line-clamp-1 text-xs text-[var(--ink-soft)]">
@@ -168,15 +166,9 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
             <DialogDescription className="text-[var(--ink-soft)]">
               {selected?.claimed
                 ? `Đã được ${selected.claimedBy || "ai đó"} nhận.`
-                : "Còn trống — nhập đúng số trên thẻ để nhận."}
+                : "Còn trống — nhập đúng số trên thẻ để nhận. Tên món quà chỉ biết khi mở hộp thật."}
             </DialogDescription>
           </DialogHeader>
-          {selected && (
-            <div className="rounded-xl bg-white/60 px-4 py-3">
-              <p className="font-medium text-[var(--ink)]">{selected.label}</p>
-              <p className="mt-1 text-sm text-[var(--ink-soft)]">{selected.description}</p>
-            </div>
-          )}
           <DialogFooter>
             {!selected?.claimed && (
               <Button
