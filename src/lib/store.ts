@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { createSeedConfig } from "./seed";
+import { createSeedConfig, ensureGiftQuestions } from "./seed";
 import type { EventConfig, PublicEvent } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -25,12 +25,19 @@ function candidatePaths(): string[] {
   return [STORE_FILE, TMP_STORE];
 }
 
+function normalizeConfig(config: EventConfig): EventConfig {
+  return {
+    ...config,
+    gifts: ensureGiftQuestions(config.gifts ?? []),
+  };
+}
+
 async function readFromDisk(): Promise<EventConfig | null> {
   for (const file of candidatePaths()) {
     try {
       const raw = await fs.readFile(file, "utf8");
       const parsed = JSON.parse(raw) as EventConfig;
-      if (parsed?.people && parsed?.gifts) return parsed;
+      if (parsed?.people && parsed?.gifts) return normalizeConfig(parsed);
     } catch {
       // try next
     }
@@ -59,7 +66,10 @@ async function writeToDisk(config: EventConfig): Promise<void> {
 
 export async function getConfig(): Promise<EventConfig> {
   const mem = memory();
-  if (mem.__womensDayStore) return mem.__womensDayStore;
+  if (mem.__womensDayStore) {
+    mem.__womensDayStore = normalizeConfig(mem.__womensDayStore);
+    return mem.__womensDayStore;
+  }
 
   const fromDisk = await readFromDisk();
   if (fromDisk) {
@@ -74,7 +84,10 @@ export async function getConfig(): Promise<EventConfig> {
 }
 
 export async function saveConfig(config: EventConfig): Promise<EventConfig> {
-  const next = { ...config, updatedAt: new Date().toISOString() };
+  const next = normalizeConfig({
+    ...config,
+    updatedAt: new Date().toISOString(),
+  });
   memory().__womensDayStore = next;
   await writeToDisk(next);
   return next;
@@ -90,14 +103,14 @@ export function toPublicEvent(config: EventConfig): PublicEvent {
       silhouette: p.silhouette,
       clues: p.clues,
     })),
-    // Public gifts: display numbers + claim state only — never label/description/answers
+    // Public: question + claim state only — never answer (displayNumber), label, description
     gifts: config.gifts
       .slice()
       .sort((a, b) => a.slot - b.slot)
       .map((g) => ({
         id: g.id,
         slot: g.slot,
-        displayNumber: g.displayNumber,
+        question: g.question,
         claimed: Boolean(g.claimedBy),
         claimedBy: g.claimedBy,
       })),

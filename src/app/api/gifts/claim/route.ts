@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const bodySchema = z.object({
-  displayNumber: z.coerce.number().int().positive(),
+  giftId: z.string().min(1),
+  answer: z.coerce.number().int().positive(),
   claimerName: z.string().min(1).max(80),
 });
 
@@ -21,31 +22,40 @@ export async function POST(request: Request) {
   const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
-      { ok: false, error: "Nhập số trên thẻ và tên của bạn." },
+      { ok: false, error: "Chọn hộp quà, nhập câu trả lời và tên của bạn." },
       { status: 400 },
     );
   }
 
   const config = await getConfig();
-  const gift = config.gifts.find((g) => g.displayNumber === parsed.data.displayNumber);
+  const gift = config.gifts.find((g) => g.id === parsed.data.giftId);
 
   if (!gift) {
-    return NextResponse.json({
-      ok: false,
-      error: "Không có món quà nào khớp số này. Kiểm tra lại số trên thẻ nhé.",
-    }, { status: 404 });
+    return NextResponse.json(
+      { ok: false, error: "Không tìm thấy hộp quà này." },
+      { status: 404 },
+    );
   }
 
   if (gift.claimedBy) {
-    return NextResponse.json({
-      ok: false,
-      error: `Số ${gift.displayNumber} đã được ${gift.claimedBy} nhận rồi.`,
-      gift: {
-        id: gift.id,
-        displayNumber: gift.displayNumber,
-        claimedBy: gift.claimedBy,
+    return NextResponse.json(
+      {
+        ok: false,
+        error: `Hộp này đã được ${gift.claimedBy} nhận rồi.`,
+        gift: {
+          id: gift.id,
+          claimedBy: gift.claimedBy,
+        },
       },
-    }, { status: 409 });
+      { status: 409 },
+    );
+  }
+
+  if (parsed.data.answer !== gift.displayNumber) {
+    return NextResponse.json(
+      { ok: false, error: "Chưa đúng — thử lại nhé!" },
+      { status: 400 },
+    );
   }
 
   const claimer = parsed.data.claimerName.trim();
@@ -55,7 +65,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
-    message: `Chúc mừng ${claimer}! Bạn đã nhận quà số ${gift.displayNumber}. Mở hộp thật để xem món quà nhé!`,
+    message: `Chúc mừng ${claimer}! Bạn nhận quà số ${gift.displayNumber}. Mở hộp thật để xem món quà nhé!`,
     gift: {
       id: gift.id,
       displayNumber: gift.displayNumber,

@@ -1,42 +1,141 @@
 import type { EventConfig, Gift, Person } from "./types";
 
 /**
- * Gift slot 1→15 display numbers = physical thiệp answers (not 1–15 sequential).
- * Questions stay on cards only — see docs/thiep-questions-answers.md in agent store.
- * Thiệp 1→15: 7, 12, 18, 21, 24, 27, 33, 38, 42, 47, 52, 58, 63, 72, 88
+ * Gift slot 1→15: question + numeric answer (= displayNumber / claim key).
+ * Thiệp answers: 7, 12, 18, 21, 24, 27, 33, 38, 42, 47, 52, 58, 63, 72, 88
  */
-const SCRAMBLED_NUMBERS = [
-  7, 12, 18, 21, 24, 27, 33, 38, 42, 47, 52, 58, 63, 72, 88,
-];
-
-const GIFT_LABELS = [
-  { label: "Hộp soft", description: "Một món nhỏ xinh để bàn làm việc." },
-  { label: "Bó hoa mini", description: "Hoa tươi (hoặc giấy) — mang về nhà nhé." },
-  { label: "Thẻ cà phê", description: "Một ly ngon cho buổi chiều." },
-  { label: "Sổ tay", description: "Ghi chú đẹp cho năm mới." },
-  { label: "Nến thơm", description: "Ánh sáng ấm cho góc riêng." },
-  { label: "Son dưỡng", description: "Chăm sóc nhẹ nhàng mỗi ngày." },
-  { label: "Túi tote", description: "Đi họp, đi chợ, đi chơi đều được." },
-  { label: "Chocolate", description: "Ngọt vừa đủ cho ngày 20/10." },
-  { label: "Kẹp tóc", description: "Chi tiết nhỏ, vibe lớn." },
-  { label: "Bình giữ nhiệt", description: "Giữ ấm trà / cà phê cả buổi." },
-  { label: "Sticker pack", description: "Dán laptop, sổ, bình nước." },
-  { label: "Móc khóa", description: "Nhớ mãi buổi party hôm nay." },
-  { label: "Kem tay", description: "Mềm mại sau một ngày dài." },
-  { label: "Thiệp tay", description: "Lời chúc viết tay từ team." },
-  { label: "Surprise!", description: "Quà bí mật — mở mới biết." },
-];
+const GIFT_DEFS = [
+  {
+    displayNumber: 7,
+    question: "Cầu vồng thường được kể có mấy màu?",
+    label: "Hộp soft",
+    description: "Một món nhỏ xinh để bàn làm việc.",
+  },
+  {
+    displayNumber: 12,
+    question: "Một tá hoa hồng có bao nhiêu bông?",
+    label: "Bó hoa mini",
+    description: "Hoa tươi (hoặc giấy) — mang về nhà nhé.",
+  },
+  {
+    displayNumber: 18,
+    question: "Bạn mua 3 bó hoa, mỗi bó có 6 bông. Tổng cộng có bao nhiêu bông hoa?",
+    label: "Thẻ cà phê",
+    description: "Một ly ngon cho buổi chiều.",
+  },
+  {
+    displayNumber: 21,
+    question:
+      "Ngày 20/10 là Ngày Phụ nữ Việt Nam. Ngày hôm sau là ngày bao nhiêu của tháng 10?",
+    label: "Sổ tay",
+    description: "Ghi chú đẹp cho năm mới.",
+  },
+  {
+    displayNumber: 24,
+    question: "Một ngày có bao nhiêu giờ?",
+    label: "Nến thơm",
+    description: "Ánh sáng ấm cho góc riêng.",
+  },
+  {
+    displayNumber: 27,
+    question:
+      "Một ly trà sữa giá 30.000đ, được giảm 3.000đ. Bạn phải trả bao nhiêu nghìn đồng?",
+    label: "Son dưỡng",
+    description: "Chăm sóc nhẹ nhàng mỗi ngày.",
+  },
+  {
+    displayNumber: 33,
+    question: "Một hộp bánh có 11 chiếc. Bạn mua 3 hộp. Có tất cả bao nhiêu chiếc bánh?",
+    label: "Túi tote",
+    description: "Đi họp, đi chợ, đi chơi đều được.",
+  },
+  {
+    displayNumber: 38,
+    question:
+      "Tháng 10 có 31 ngày. Hãy cộng 31 với số ngày trong một tuần. Kết quả là bao nhiêu?",
+    label: "Chocolate",
+    description: "Ngọt vừa đủ cho ngày 20/10.",
+  },
+  {
+    displayNumber: 42,
+    question: "Một tuần có 7 ngày. Hỏi 6 tuần có bao nhiêu ngày?",
+    label: "Kẹp tóc",
+    description: "Chi tiết nhỏ, vibe lớn.",
+  },
+  {
+    displayNumber: 47,
+    question: "Bạn có 50 bông hoa và tặng đi 3 bông. Còn lại bao nhiêu bông?",
+    label: "Bình giữ nhiệt",
+    description: "Giữ ấm trà / cà phê cả buổi.",
+  },
+  {
+    displayNumber: 52,
+    question: "Một năm có khoảng bao nhiêu tuần (tính tròn)?",
+    label: "Sticker pack",
+    description: "Dán laptop, sổ, bình nước.",
+  },
+  {
+    displayNumber: 58,
+    question:
+      "Một bó hoa giá 50.000đ, thêm một tấm thiệp 8.000đ. Tổng cộng bao nhiêu nghìn đồng?",
+    label: "Móc khóa",
+    description: "Nhớ mãi buổi party hôm nay.",
+  },
+  {
+    displayNumber: 63,
+    question: "Có 9 bạn, mỗi bạn nhận 7 viên kẹo. Tổng cộng bao nhiêu viên kẹo?",
+    label: "Kem tay",
+    description: "Mềm mại sau một ngày dài.",
+  },
+  {
+    displayNumber: 72,
+    question: "Một hộp socola có 8 viên. Bạn mua 9 hộp. Có tất cả bao nhiêu viên?",
+    label: "Thiệp tay",
+    description: "Lời chúc viết tay từ team.",
+  },
+  {
+    displayNumber: 88,
+    question: "Có 8 bàn, mỗi bàn ngồi 11 người. Tổng cộng có bao nhiêu người?",
+    label: "Surprise!",
+    description: "Quà bí mật — mở mới biết.",
+  },
+] as const;
 
 function buildGifts(): Gift[] {
-  return GIFT_LABELS.map((g, i) => ({
+  return GIFT_DEFS.map((g, i) => ({
     id: `gift-${i + 1}`,
     slot: i + 1,
-    displayNumber: SCRAMBLED_NUMBERS[i]!,
+    displayNumber: g.displayNumber,
+    question: g.question,
     label: g.label,
     description: g.description,
     claimedBy: null,
     claimedAt: null,
   }));
+}
+
+/** Backfill question (and other seed fields) onto older stored gifts. */
+export function ensureGiftQuestions(gifts: Gift[]): Gift[] {
+  const byNumber = new Map<number, (typeof GIFT_DEFS)[number]>(
+    GIFT_DEFS.map((g) => [g.displayNumber, g]),
+  );
+  const bySlot = new Map<number, (typeof GIFT_DEFS)[number]>(
+    GIFT_DEFS.map((g, i) => [i + 1, g]),
+  );
+  return gifts.map((gift) => {
+    if (gift.question?.trim()) return gift;
+    const def =
+      byNumber.get(gift.displayNumber) ?? bySlot.get(gift.slot) ?? null;
+    if (!def) {
+      return { ...gift, question: gift.question || "Câu hỏi chưa cấu hình." };
+    }
+    return {
+      ...gift,
+      question: def.question,
+      label: gift.label || def.label,
+      description: gift.description ?? def.description,
+    };
+  });
 }
 
 const PEOPLE: Person[] = [
@@ -282,7 +381,7 @@ export function createSeedConfig(): EventConfig {
   return {
     title: "Ngày Phụ nữ Việt Nam 20/10",
     welcomeText:
-      "Chào mừng cả nhà đến buổi giao lưu ấm áp của team! Đoán đồng nghiệp qua vài manh mối, rồi mở quà bí mật bằng số trên thẻ của anh Hiếu nhé.",
+      "Chào mừng cả nhà đến buổi giao lưu ấm áp của team! Đoán đồng nghiệp qua vài manh mối, rồi trả lời câu hỏi trên từng hộp quà bí mật nhé.",
     people: PEOPLE,
     gifts: buildGifts(),
     updatedAt: new Date().toISOString(),

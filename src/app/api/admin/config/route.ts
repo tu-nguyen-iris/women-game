@@ -25,6 +25,7 @@ const giftSchema = z.object({
   id: z.string().min(1),
   slot: z.number().int().min(1).max(40),
   displayNumber: z.number().int().positive(),
+  question: z.string().min(1),
   label: z.string().min(1),
   description: z.string(),
   claimedBy: z.string().nullable(),
@@ -69,7 +70,7 @@ export async function PUT(request: Request) {
   const displayNumbers = parsed.data.gifts.map((g) => g.displayNumber);
   if (new Set(displayNumbers).size !== displayNumbers.length) {
     return NextResponse.json(
-      { ok: false, error: "Số hiển thị trên quà phải không trùng nhau." },
+      { ok: false, error: "Đáp án số (displayNumber) trên quà phải không trùng nhau." },
       { status: 400 },
     );
   }

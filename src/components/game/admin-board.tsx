@@ -41,6 +41,7 @@ function newGift(gifts: Gift[]): Gift {
     id: `gift-${Date.now()}-${slot}`,
     slot,
     displayNumber: nextDisplayNumber(gifts),
+    question: "Câu hỏi mới?",
     label: `Quà ô ${slot}`,
     description: "",
     claimedBy: null,
@@ -360,15 +361,15 @@ export function AdminBoard() {
         <TabsContent value="gifts" className="mt-4 space-y-3">
           <div className="rounded-2xl bg-white/55 p-4 text-sm text-[var(--ink-soft)]">
             <p>
-              Cấu hình đầy đủ quà bí mật. <strong className="font-medium text-[var(--ink)]">Số hiển thị</strong>{" "}
-              in trên hộp (khớp số trên thẻ vật lý) — không trùng.{" "}
-              <strong className="font-medium text-[var(--ink)]">Tên / mô tả</strong> chỉ nội bộ
-              (admin); player không thấy.
+              Player thấy <strong className="font-medium text-[var(--ink)]">câu hỏi</strong> trên
+              mỗi hộp và gõ đáp án số.{" "}
+              <strong className="font-medium text-[var(--ink)]">Đáp án số</strong> (={" "}
+              <code>displayNumber</code>) không hiện trên UI player — chỉ lộ sau khi trả lời đúng.
+              Tên / mô tả quà chỉ nội bộ.
             </p>
             <p className="mt-2 text-xs text-[var(--ink-muted)]">
               Hiện {config.gifts.length} món · đã nhận{" "}
-              {config.gifts.filter((g) => g.claimedBy).length}. Seed mặc định: 15 ô với số thiệp
-              7…88.
+              {config.gifts.filter((g) => g.claimedBy).length}. Seed: 15 câu thiệp (đáp án 7…88).
             </p>
           </div>
           {config.gifts
@@ -427,7 +428,7 @@ export function AdminBoard() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Số hiển thị</Label>
+                    <Label>Đáp án số</Label>
                     <Input
                       type="number"
                       value={String(gift.displayNumber)}
@@ -445,6 +446,14 @@ export function AdminBoard() {
                       onValueChange={(value) => updateGift(gift.id, { label: value })}
                     />
                   </div>
+                </div>
+                <div className="mt-3 space-y-2">
+                  <Label>Câu hỏi (player thấy)</Label>
+                  <Textarea
+                    rows={2}
+                    value={gift.question ?? ""}
+                    onChange={(e) => updateGift(gift.id, { question: e.target.value })}
+                  />
                 </div>
                 <div className="mt-3 space-y-2">
                   <Label>Mô tả / ghi chú nội bộ</Label>
@@ -478,8 +487,7 @@ export function AdminBoard() {
           </div>
           <Separator className="my-4" />
           <p className="text-xs text-[var(--ink-muted)]">
-            Mẹo: số hiển thị = số trên thẻ anh Hiếu. Lưu cấu hình sau khi sửa. «Seed lại mẫu»
-            khôi phục 15 quà + 14 người.
+            Mẹo: đáp án số = số quà sau khi đoán đúng. «Seed lại mẫu» khôi phục 15 câu + 14 người.
           </p>
         </TabsContent>
       </Tabs>

@@ -13,8 +13,14 @@ export type Gift = {
   id: string;
   /** Internal board order (admin-editable) */
   slot: number;
-  /** Scrambled display number shown on the gift (matches physical card number) */
+  /**
+   * Correct numeric answer for this gift's question.
+   * Also the “quà số N” revealed only after a correct claim.
+   * Never expose on public player payloads.
+   */
   displayNumber: number;
+  /** Player-facing question (safe to publish) */
+  question: string;
   /** Internal prize name — never exposed on public /api/event */
   label: string;
   /** Internal note — never exposed on public /api/event */
@@ -43,7 +49,7 @@ export type PublicEvent = {
   gifts: Array<{
     id: string;
     slot: number;
-    displayNumber: number;
+    question: string;
     claimed: boolean;
     claimedBy: string | null;
   }>;
