@@ -142,9 +142,6 @@ export function GuessWho({ initial }: { initial: PublicEvent }) {
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-4xl leading-tight text-[var(--ink)] sm:text-5xl">
           {isRevealed ? displayName : "Đoán xem là ai"}
         </h1>
-        <p className="mt-3 max-w-md text-[var(--ink-soft)]">
-          Đọc manh mối rồi gõ tên (có thể dùng biệt danh nội bộ). Sai cũng không sao — đoán tiếp!
-        </p>
 
         <ul className="mt-6 space-y-3">
           {person.clues.map((clue, i) => (
