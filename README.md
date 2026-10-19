@@ -27,7 +27,7 @@ Cấu hình lưu vào `data/event-store.json` (local). Trên Vercel serverless, 
 
 ## Live / Deploy (Vercel)
 
-Demo anonymous deploy (có thể hết hạn ~60 phút nếu chưa claim):
+Demo anonymous deploy (hết hạn ~60 phút nếu chưa claim — claim sớm):
 
 - App: https://temporary-quick-sulfur-1ba7o49.vercel.app
 - Claim để giữ lâu dài: https://vercel.com/claim-deployment?code=8d97eb37-7370-45c1-b7a4-cdf48a897c22
@@ -41,6 +41,8 @@ npx vercel --prod --yes
 ```
 
 Trên dashboard Vercel, đặt env `ADMIN_PASSWORD` (đừng dùng `demo2010` cho sự kiện thật).
+
+Branch làm việc: `cursor/womens-day-minigame-976a`. PR draft cần repo Origin/GitHub chuẩn (session New Project dạng `agent_temp` chưa mở được PR).
 
 ## Demo seed
 
