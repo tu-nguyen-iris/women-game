@@ -97,7 +97,28 @@ export async function POST(request: Request) {
   }
 
   if (action === "reseed") {
+    // Apply seed people/gifts/copy, but keep any existing gift claims.
+    const current = await getConfig();
     const seed = createSeedConfig();
+    const claimsById = new Map(
+      current.gifts.map((g) => [
+        g.id,
+        { claimedBy: g.claimedBy, claimedAt: g.claimedAt },
+      ]),
+    );
+    const claimsByNumber = new Map(
+      current.gifts
+        .filter((g) => g.claimedBy)
+        .map((g) => [
+          g.displayNumber,
+          { claimedBy: g.claimedBy, claimedAt: g.claimedAt },
+        ]),
+    );
+    seed.gifts = seed.gifts.map((g) => {
+      const claim = claimsById.get(g.id) ?? claimsByNumber.get(g.displayNumber);
+      if (!claim?.claimedBy) return g;
+      return { ...g, claimedBy: claim.claimedBy, claimedAt: claim.claimedAt };
+    });
     await saveConfig(seed);
     return NextResponse.json({ ok: true, config: seed });
   }
