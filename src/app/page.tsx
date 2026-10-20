@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { getConfig } from "@/lib/store";
@@ -11,18 +12,18 @@ export default async function HomePage() {
     <>
       <SiteHeader />
       <main className="relative flex flex-1 flex-col">
-        <section className="relative flex min-h-[calc(100vh-4.5rem)] flex-1 flex-col justify-center px-5 pb-16 pt-6 sm:px-10">
-          <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[48%] lg:block">
-            <div className="absolute inset-6 overflow-hidden rounded-[2.5rem]">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.55),transparent_45%),linear-gradient(145deg,#fda4af_0%,#be123c_55%,#881337_100%)]" />
-              <div className="absolute -left-10 top-16 h-40 w-40 rounded-full bg-white/25 blur-2xl animate-float" />
-              <div className="absolute bottom-20 right-10 h-28 w-28 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm animate-drift" />
-              <div className="absolute inset-0 flex items-end justify-center pb-14">
-                <p className="font-[family-name:var(--font-display)] text-6xl text-white/90 xl:text-7xl">
-                  20 · 10
-                </p>
-              </div>
-            </div>
+        <section className="relative flex min-h-[calc(100vh-4.5rem)] flex-1 flex-col justify-end overflow-hidden px-5 pb-14 pt-6 sm:px-10 sm:pb-16 sm:justify-center">
+          <div className="absolute inset-0">
+            <Image
+              src="/og-2010.png"
+              alt="RIO — Chào mừng Ngày Phụ nữ Việt Nam 20/10"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-[center_30%] sm:object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#fff5f7]/95 via-[#fff5f7]/72 to-[#fff5f7]/25 sm:via-[#fff5f7]/55 sm:to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#fff5f7]/90 to-transparent sm:hidden" />
           </div>
 
           <div className="relative z-10 max-w-xl animate-rise">
