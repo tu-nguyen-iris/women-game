@@ -91,7 +91,14 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
           setGifts((prev) =>
             prev.map((g) =>
               g.id === data.gift.id
-                ? { ...g, claimed: true, claimedBy: data.gift.claimedBy }
+                ? {
+                    ...g,
+                    claimed: true,
+                    claimedBy: data.gift.claimedBy,
+                    ...(typeof data.gift.displayNumber === "number"
+                      ? { displayNumber: data.gift.displayNumber }
+                      : {}),
+                  }
                 : g,
             ),
           );
@@ -109,6 +116,8 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
         setLoading(false);
         return;
       }
+      const unlocked =
+        typeof data.gift?.displayNumber === "number" ? data.gift.displayNumber : null;
       setGifts((prev) =>
         prev.map((g) =>
           g.id === data.gift.id
@@ -116,13 +125,22 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
                 ...g,
                 claimed: true,
                 claimedBy: data.gift.claimedBy,
+                ...(unlocked != null ? { displayNumber: unlocked } : {}),
               }
             : g,
         ),
       );
-      setUnlockedNumber(
-        typeof data.gift?.displayNumber === "number" ? data.gift.displayNumber : null,
+      setSelected((prev) =>
+        prev && prev.id === data.gift.id
+          ? {
+              ...prev,
+              claimed: true,
+              claimedBy: data.gift.claimedBy,
+              ...(unlocked != null ? { displayNumber: unlocked } : {}),
+            }
+          : prev,
       );
+      setUnlockedNumber(unlocked);
       setFeedback({ type: "ok", message: data.message });
       setAnswer("");
       setClaimerId("");
@@ -191,7 +209,11 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
               </div>
               <div>
                 <p className="text-sm font-medium text-[var(--rose-deep)]">
-                  {gift.claimed ? "Đã nhận" : "Trả lời để nhận"}
+                  {gift.claimed
+                    ? typeof gift.displayNumber === "number"
+                      ? `Đáp án: ${gift.displayNumber}`
+                      : "Đã nhận"
+                    : "Trả lời để nhận"}
                 </p>
                 {gift.claimed && gift.claimedBy && (
                   <p className="mt-1 line-clamp-1 text-xs text-[var(--ink-soft)]">
@@ -217,7 +239,11 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
         <DialogContent className="border-rose-100 bg-[var(--wash)] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-[family-name:var(--font-display)] text-2xl">
-              {selected?.claimed ? "Đã nhận" : `Ô ${selected?.slot ?? ""}`}
+              {selected?.claimed
+                ? typeof selected.displayNumber === "number"
+                  ? `Bạn nhận quà số ${selected.displayNumber}`
+                  : "Đã nhận"
+                : `Ô ${selected?.slot ?? ""}`}
             </DialogTitle>
             <DialogDescription className="text-[var(--ink-soft)]">
               {selected?.claimed
@@ -225,6 +251,11 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
                 : selected?.question}
             </DialogDescription>
           </DialogHeader>
+          {selected?.claimed && typeof selected.displayNumber === "number" && (
+            <p className="font-[family-name:var(--font-display)] text-xl text-[var(--rose-deep)]">
+              Đáp án: {selected.displayNumber}
+            </p>
+          )}
           {selected && !selected.claimed ? (
             <form onSubmit={claim} className="space-y-4">
               <div className="space-y-2">

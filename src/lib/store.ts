@@ -107,17 +107,22 @@ export function toPublicEvent(config: EventConfig): PublicEvent {
       id: p.id,
       name: p.name,
     })),
-    // Public: question + claim state only — never answer (displayNumber), label, description
+    // Public: question + claim state; displayNumber only after claim.
+    // Never expose prize label / description.
     gifts: config.gifts
       .slice()
       .sort((a, b) => a.slot - b.slot)
-      .map((g) => ({
-        id: g.id,
-        slot: g.slot,
-        question: g.question,
-        claimed: Boolean(g.claimedBy),
-        claimedBy: g.claimedBy,
-      })),
+      .map((g) => {
+        const claimed = Boolean(g.claimedBy);
+        return {
+          id: g.id,
+          slot: g.slot,
+          question: g.question,
+          claimed,
+          claimedBy: g.claimedBy,
+          ...(claimed ? { displayNumber: g.displayNumber } : {}),
+        };
+      }),
   };
 }
 

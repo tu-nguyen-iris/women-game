@@ -364,8 +364,8 @@ export function AdminBoard() {
               Player thấy <strong className="font-medium text-[var(--ink)]">câu hỏi</strong> trên
               mỗi hộp và gõ đáp án số.{" "}
               <strong className="font-medium text-[var(--ink)]">Đáp án số</strong> (={" "}
-              <code>displayNumber</code>) không hiện trên UI player — chỉ lộ sau khi trả lời đúng.
-              Tên / mô tả quà chỉ nội bộ.
+              <code>displayNumber</code>) ẩn khi hộp còn trống; sau khi nhận, hiện trên board cho
+              mọi người. Tên / mô tả quà chỉ nội bộ.
             </p>
             <p className="mt-2 text-xs text-[var(--ink-muted)]">
               Hiện {config.gifts.length} món · đã nhận{" "}

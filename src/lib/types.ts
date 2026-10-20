@@ -16,8 +16,7 @@ export type Gift = {
   slot: number;
   /**
    * Correct numeric answer for this gift's question.
-   * Also the “quà số N” revealed only after a correct claim.
-   * Never expose on public player payloads.
+   * Also the “quà số N” revealed on public payloads only after the gift is claimed.
    */
   displayNumber: number;
   /** Player-facing question (safe to publish) */
@@ -65,5 +64,10 @@ export type PublicEvent = {
     question: string;
     claimed: boolean;
     claimedBy: string | null;
+    /**
+     * Correct answer — present only when `claimed` is true.
+     * Unclaimed gifts omit this field so the board cannot spoil answers.
+     */
+    displayNumber?: number;
   }>;
 };
