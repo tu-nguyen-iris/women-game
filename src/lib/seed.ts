@@ -146,7 +146,7 @@ const PEOPLE: Person[] = [
   {
     id: "p8",
     name: "Thái Yến Phụng",
-    photoUrl: "/people/yen-phung.jpg",
+    photoUrl: "/people/yen-phung-v2.jpg",
     silhouette: false,
     clues: [
       "Cô gái quê Ninh Thuận của team AIME",
@@ -164,7 +164,7 @@ const PEOPLE: Person[] = [
   {
     id: "p12",
     name: "Trần Thị Thanh Hân",
-    photoUrl: "/people/thanh-han.jpg",
+    photoUrl: "/people/thanh-han-v2.jpg",
     silhouette: false,
     clues: ["Cô gái sinh năm 2003", "Vừa vào công ty"],
     aliases: [
@@ -179,7 +179,7 @@ const PEOPLE: Person[] = [
   {
     id: "p3",
     name: "Thạch Thị Thu Trang",
-    photoUrl: "/people/trang.jpg",
+    photoUrl: "/people/trang-v2.jpg",
     silhouette: false,
     clues: [
       "Biệt danh Rapuka",
@@ -197,8 +197,8 @@ const PEOPLE: Person[] = [
   {
     id: "p14",
     name: "Phan Ngọc Thi",
-    photoUrl: "/placeholders/person-2.svg",
-    silhouette: true,
+    photoUrl: "/people/ngoc-thi-v2.jpg",
+    silhouette: false,
     clues: ["Mục tiêu đi làm để nuôi mèo", "Thích dance"],
     aliases: [
       "phan ngọc thi",
@@ -211,7 +211,7 @@ const PEOPLE: Person[] = [
   {
     id: "p6",
     name: "Lý Thanh Thảo",
-    photoUrl: "/people/ly-thanh-thao.jpg",
+    photoUrl: "/people/ly-thanh-thao-v2.jpg",
     silhouette: false,
     clues: [
       "Cô gái người Hoa",
@@ -230,8 +230,8 @@ const PEOPLE: Person[] = [
   {
     id: "p1",
     name: "Lê Thị Tuyết Trinh",
-    photoUrl: "/placeholders/person-1.svg",
-    silhouette: true,
+    photoUrl: "/people/tuyet-trinh-v2.jpg",
+    silhouette: false,
     clues: [
       "Rất khéo tay, cắt trái cây như trong tiệc cưới",
       "Hiểu rõ về luật",
@@ -247,8 +247,8 @@ const PEOPLE: Person[] = [
   {
     id: "p10",
     name: "Nguyễn Thu Thảo",
-    photoUrl: "/placeholders/person-1.svg",
-    silhouette: true,
+    photoUrl: "/people/thu-thao-v2.jpg",
+    silhouette: false,
     clues: [
       "Câu cửa miệng là đang giảm cân",
       "Hay nhịn ăn để uống trà sữa",
@@ -263,7 +263,7 @@ const PEOPLE: Person[] = [
   {
     id: "p5",
     name: "Nguyễn Dương Anh Phương",
-    photoUrl: "/people/anh-phuong.jpg",
+    photoUrl: "/people/anh-phuong-v2.jpg",
     silhouette: false,
     clues: [
       'Mỗi ngày sẽ có ít nhất 1 ly "hóa chất"',
@@ -283,7 +283,7 @@ const PEOPLE: Person[] = [
   {
     id: "p13",
     name: "Lê Phương Thảo",
-    photoUrl: "/people/phuong-thao.jpg",
+    photoUrl: "/people/phuong-thao-v2.jpg",
     silhouette: false,
     clues: [
       "Cô gái sinh năm 2003",
@@ -299,7 +299,7 @@ const PEOPLE: Person[] = [
   {
     id: "p2",
     name: "Nguyễn Phương Quyên",
-    photoUrl: "/people/quyen.jpg",
+    photoUrl: "/people/quyen-v2.jpg",
     silhouette: false,
     clues: [
       "Thích nuôi mèo",
@@ -317,8 +317,8 @@ const PEOPLE: Person[] = [
   {
     id: "p11",
     name: "Nguyễn Lê Đan Tâm",
-    photoUrl: "/placeholders/person-2.svg",
-    silhouette: true,
+    photoUrl: "/people/dan-tam-v2.jpg",
+    silhouette: false,
     clues: ["Cô gái Huế", "BD của công ty"],
     aliases: [
       "nguyễn lê đan tâm",
@@ -332,8 +332,8 @@ const PEOPLE: Person[] = [
   {
     id: "p7",
     name: "Lê Nguyễn Thuỳ Dương",
-    photoUrl: "/placeholders/person-1.svg",
-    silhouette: true,
+    photoUrl: "/people/thuy-duong-v2.jpg",
+    silhouette: false,
     clues: ["Cao", "Hay mặc áo polo nhất"],
     aliases: [
       "lê nguyễn thuỳ dương",
@@ -349,7 +349,7 @@ const PEOPLE: Person[] = [
   {
     id: "p4",
     name: "Trình Thị Thùy Trinh",
-    photoUrl: "/people/thuy-trinh.jpg",
+    photoUrl: "/people/thuy-trinh-v2.jpg",
     silhouette: false,
     clues: ["Thích nuôi hamster"],
     aliases: [
@@ -363,7 +363,7 @@ const PEOPLE: Person[] = [
   {
     id: "p9",
     name: "Trần Thị Minh Thư",
-    photoUrl: "/people/minh-thu.jpg",
+    photoUrl: "/people/minh-thu-v2.jpg",
     silhouette: false,
     clues: [
       "Hay nói tiếng Anh lung tung",
