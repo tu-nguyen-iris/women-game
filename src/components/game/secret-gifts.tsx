@@ -60,13 +60,67 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
     [claimers, gifts],
   );
 
-  function openGift(gift: GiftPublic) {
+  function applyGiftsFromEvent(eventGifts: GiftPublic[], focusId?: string | null) {
+    setGifts(eventGifts);
+    if (!focusId) return;
+    const updated = eventGifts.find((g) => g.id === focusId);
+    if (updated) {
+      setSelected(updated);
+      if (updated.claimed && typeof updated.displayNumber === "number") {
+        setUnlockedNumber(updated.displayNumber);
+      }
+    }
+  }
+
+  async function refreshBoard(focusId?: string | null) {
+    try {
+      const eventRes = await fetch("/api/event", { cache: "no-store" });
+      if (!eventRes.ok) return;
+      const event = (await eventRes.json()) as PublicEvent;
+      if (Array.isArray(event.gifts)) {
+        applyGiftsFromEvent(event.gifts, focusId);
+      }
+    } catch {
+      // keep local state
+    }
+  }
+
+  function markGiftClaimed(partial: {
+    id: string;
+    claimedBy?: string | null;
+    displayNumber?: number;
+  }) {
+    const patch = {
+      claimed: true as const,
+      claimedBy: partial.claimedBy ?? null,
+      ...(typeof partial.displayNumber === "number"
+        ? { displayNumber: partial.displayNumber }
+        : {}),
+    };
+    setGifts((prev) =>
+      prev.map((g) => (g.id === partial.id ? { ...g, ...patch } : g)),
+    );
+    setSelected((prev) =>
+      prev && prev.id === partial.id ? { ...prev, ...patch } : prev,
+    );
+    if (typeof partial.displayNumber === "number") {
+      setUnlockedNumber(partial.displayNumber);
+    }
+  }
+
+  async function openGift(gift: GiftPublic) {
     setSelected(gift);
     setAnswer("");
     setClaimerId("");
     setFeedback(null);
-    setUnlockedNumber(null);
+    setUnlockedNumber(
+      gift.claimed && typeof gift.displayNumber === "number"
+        ? gift.displayNumber
+        : null,
+    );
     setClaimOpen(true);
+    // Re-sync from durable store so stale SSR / another client’s claim shows up.
+    await refreshBoard(gift.id);
   }
 
   async function claim(e: React.FormEvent) {
@@ -74,6 +128,7 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
     if (!selected || !claimerId) return;
     setLoading(true);
     setFeedback(null);
+    const focusId = selected.id;
     try {
       const res = await fetch("/api/gifts/claim", {
         method: "POST",
@@ -88,72 +143,33 @@ export function SecretGifts({ initial }: { initial: PublicEvent }) {
       if (!res.ok || !data.ok) {
         setFeedback({ type: "err", message: data.error || "Chưa nhận được quà." });
         if (data.gift?.id) {
-          setGifts((prev) =>
-            prev.map((g) =>
-              g.id === data.gift.id
-                ? {
-                    ...g,
-                    claimed: true,
-                    claimedBy: data.gift.claimedBy,
-                    ...(typeof data.gift.displayNumber === "number"
-                      ? { displayNumber: data.gift.displayNumber }
-                      : {}),
-                  }
-                : g,
-            ),
-          );
+          markGiftClaimed({
+            id: data.gift.id,
+            claimedBy: data.gift.claimedBy,
+            displayNumber:
+              typeof data.gift.displayNumber === "number"
+                ? data.gift.displayNumber
+                : undefined,
+          });
         }
-        // Sync claim state so the select drops people who already claimed
-        try {
-          const eventRes = await fetch("/api/event");
-          if (eventRes.ok) {
-            const event = (await eventRes.json()) as PublicEvent;
-            if (Array.isArray(event.gifts)) setGifts(event.gifts);
-          }
-        } catch {
-          // keep local state
-        }
+        // Always refresh so board + dialog match durable server state
+        // (fixes "already claimed" while UI still looks open).
+        await refreshBoard(data.gift?.id ?? focusId);
         setLoading(false);
         return;
       }
       const unlocked =
         typeof data.gift?.displayNumber === "number" ? data.gift.displayNumber : null;
-      setGifts((prev) =>
-        prev.map((g) =>
-          g.id === data.gift.id
-            ? {
-                ...g,
-                claimed: true,
-                claimedBy: data.gift.claimedBy,
-                ...(unlocked != null ? { displayNumber: unlocked } : {}),
-              }
-            : g,
-        ),
-      );
-      setSelected((prev) =>
-        prev && prev.id === data.gift.id
-          ? {
-              ...prev,
-              claimed: true,
-              claimedBy: data.gift.claimedBy,
-              ...(unlocked != null ? { displayNumber: unlocked } : {}),
-            }
-          : prev,
-      );
+      markGiftClaimed({
+        id: data.gift.id,
+        claimedBy: data.gift.claimedBy,
+        displayNumber: unlocked ?? undefined,
+      });
       setUnlockedNumber(unlocked);
       setFeedback({ type: "ok", message: data.message });
       setAnswer("");
       setClaimerId("");
-      // Refresh so this claimer disappears from the select for this client
-      try {
-        const eventRes = await fetch("/api/event");
-        if (eventRes.ok) {
-          const event = (await eventRes.json()) as PublicEvent;
-          if (Array.isArray(event.gifts)) setGifts(event.gifts);
-        }
-      } catch {
-        // local gift update already applied
-      }
+      await refreshBoard(data.gift.id);
     } catch {
       setFeedback({ type: "err", message: "Lỗi mạng — thử lại sau." });
     } finally {

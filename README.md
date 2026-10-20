@@ -23,7 +23,7 @@ npm run dev                  # http://127.0.0.1:43127
 2. Sửa tiêu đề / lời chào, người chơi (ảnh URL, manh mối, alias đáp án), và 15 quà (nhãn + **số hiển thị** xáo trộn).
 3. **Reset nhận quà** trước giờ party; **Seed lại mẫu** để khôi phục data demo.
 
-Cấu hình lưu vào `data/event-store.json` (local). Trên Vercel serverless, state giữ trong bộ nhớ + `/tmp` (có thể mất khi cold start) — với event một buổi thì ổn; muốn bền vững hơn hãy chạy một Node process dài (`npm start`) hoặc gắn store ngoài.
+Cấu hình lưu vào **Vercel Blob** (`event-store.json`, private) khi có `BLOB_READ_WRITE_TOKEN` / `BLOB_STORE_ID`. Local không có Blob thì dùng `data/event-store.json`. Không dùng memory/`/tmp` làm nguồn sự thật trên production.
 
 ## Live / Deploy (Vercel)
 
