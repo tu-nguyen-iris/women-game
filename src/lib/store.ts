@@ -78,18 +78,37 @@ async function readFromBlob(): Promise<LoadedConfig | null> {
   }
 }
 
+/** Blob `get()` may return a weak ETag (`W/"…"`); `put({ ifMatch })` needs the strong form. */
+function strongEtag(etag: string | null | undefined): string | null {
+  if (!etag) return null;
+  const trimmed = etag.trim();
+  if (trimmed.startsWith("W/") || trimmed.startsWith("w/")) {
+    return trimmed.slice(2).trim();
+  }
+  return trimmed;
+}
+
+function isPreconditionFailed(err: unknown): boolean {
+  if (err instanceof BlobPreconditionFailedError) return true;
+  return (
+    err instanceof Error &&
+    /precondition failed|etag mismatch/i.test(err.message)
+  );
+}
+
 async function writeToBlob(
   config: EventConfig,
   etag: string | null,
 ): Promise<string> {
   const payload = JSON.stringify(config, null, 2);
+  const match = strongEtag(etag);
   const options = {
     access: "private" as const,
     contentType: "application/json",
     addRandomSuffix: false,
     cacheControlMaxAge: 60,
-    ...(etag
-      ? { ifMatch: etag }
+    ...(match
+      ? { ifMatch: match }
       : { allowOverwrite: true }),
   };
   const result = await blobPut(BLOB_PATHNAME, payload, options);
@@ -229,7 +248,7 @@ export async function mutateConfig<T>(
         }
         return outcome.result;
       } catch (err) {
-        if (err instanceof BlobPreconditionFailedError) {
+        if (isPreconditionFailed(err)) {
           lastError = err;
           continue;
         }
